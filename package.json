@@ -1,0 +1,33 @@
+{
+  "name": "nodejs-express-crud-template",
+  "version": "1.0.0",
+  "description": "A clean and minimal REST API CRUD template built with Express and TypeScript, showcasing a simple structure for building Node.js backend applications.",
+  "main": "./src/index.ts",
+  "keywords": [
+    "nodejs",
+    "express",
+    "typescript",
+    "rest-api",
+    "crud",
+    "api",
+    "backend",
+    "template"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx src/app.ts",
+    "build": "tsc"
+  },
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
