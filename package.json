@@ -1,6 +1,6 @@
 {
-  "name": "nodejs-express-crud-template",
-  "description": "A clean and reusable REST API template built with Express and TypeScript, featuring Zod validation and a scalable project structure.",
+  "name": "nodejs-express-api-template",
+  "description": "A clean and reusable API template built with Express and TypeScript, featuring Zod validation and a scalable project structure.",
   "version": "1.0.0",
   "license": "MIT",
   "type": "module",
