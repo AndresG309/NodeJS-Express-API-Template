@@ -1,28 +1,30 @@
 {
   "name": "nodejs-express-crud-template",
+  "description": "A clean and reusable REST API template built with Express and TypeScript, featuring Zod validation and a scalable project structure.",
   "version": "1.0.0",
-  "description": "A clean and minimal REST API CRUD template built with Express and TypeScript, showcasing a simple structure for building Node.js backend applications.",
-  "main": "./src/index.ts",
+  "license": "MIT",
+  "type": "module",
   "keywords": [
     "nodejs",
     "express",
     "typescript",
     "rest-api",
-    "crud",
     "api",
     "backend",
-    "template"
+    "template",
+    "zod",
+    "crud"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx src/app.ts",
+    "dev": "tsx src/server.ts",
     "build": "tsc"
   },
-  "type": "module",
   "dependencies": {
+    "@types/cors": "^2.8.19",
     "cors": "^2.8.6",
     "dotenv": "^18.0.4",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
