@@ -8,6 +8,7 @@ dotenv.config({
 
 const envSchema = z.object({
   SERVER_PORT: z.coerce.number().int().positive(),
+  NODE_ENV: z.literal(["development", "production"])
 })
 
 export const env = envSchema.parse(process.env)
