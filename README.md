@@ -14,6 +14,7 @@ dependencies for their own API.
 - [Available commands](#available-commands)
 - [Project structure](#project-structure)
 - [CORS customization](#cors-customization)
+- [Error handling](#error-handling)
 - [Adding routes](#adding-routes)
 - [Customization checklist](#customization-checklist)
 - [License](#license)
@@ -24,6 +25,7 @@ dependencies for their own API.
 - TypeScript with strict type checking
 - Zod for environment configuration validation
 - CORS configuration
+- Centralized custom error handling
 - Separate application and server entry points
 - Example route and controller structure
 - ES modules
@@ -94,6 +96,13 @@ src/
 │   └── env.ts
 ├── controllers/
 │   └── example.controller.ts
+├── errors/
+│   ├── CustomError.ts
+│   ├── ExampleError.ts
+│   └── index.ts
+├── middlewares/
+│   ├── errorHandler.ts
+│   └── index.ts
 ├── routes/
 │   ├── example.route.ts
 │   └── index.ts
@@ -107,6 +116,8 @@ as the needs of your application grow.
 - `app.ts` creates and configures the Express application.
 - `server.ts` starts the HTTP server.
 - `config/` contains application configuration.
+- `errors/` contains the base custom error and application-specific error types.
+- `middlewares/` contains reusable Express middleware, including error handling.
 - `routes/` defines API routes.
 - `controllers/` contains request handlers.
 
@@ -133,6 +144,83 @@ The alternative is included as a comment in `src/config/cors.ts`. You should
 remove or replace the wildcard configuration when your application requires
 restricted access. Other CORS options can be added there as needed.
 
+## Error handling
+
+The template includes centralized error handling through the
+[`errorHandler`](src/middlewares/errorHandler.ts) middleware. It is registered
+after the application routes in [`src/app.ts`](src/app.ts), which allows errors
+thrown by controllers and other route middleware to be handled in one place.
+
+### Custom errors
+
+Custom application errors should extend
+[`CustomError`](src/errors/CustomError.ts). The base class requires each custom
+error type to provide a `statusCode` and accepts the response `message`:
+
+```ts
+export class ExampleError extends CustomError {
+  readonly statusCode = 500
+
+  constructor(message: string) {
+    super(message)
+  }
+}
+```
+
+This design makes the error response contract easy to customize. If your
+application needs additional shared properties, such as an error code,
+validation details, or a public/private message distinction, add them to
+`CustomError` and update the custom error classes that extend it.
+
+Create additional error types in `src/errors/`, export them from
+`src/errors/index.ts`, and throw them from controllers or services when
+appropriate. Each type can define its own HTTP status code while reusing the
+common behavior from `CustomError`.
+
+### Error responses
+
+Known custom errors use their `statusCode` and `message` values. The current
+response shape is:
+
+```json
+{
+  "success": false,
+  "error": {
+    "status": 500,
+    "message": "ExampleError thrown from exampleController"
+  }
+}
+```
+
+Errors that are not instances of `CustomError` are treated as unexpected
+failures. They return a `500` status and the generic message
+`Internal server error`, rather than exposing the original error details.
+Customize this behavior in `src/middlewares/errorHandler.ts` if your
+application needs different logging, response fields, or environment-specific
+behavior.
+
+### Type-specific behavior
+
+The error handler can also apply custom behavior for a specific error type by
+checking its instance:
+
+```ts
+if (err instanceof ExampleError) {
+  // Add behavior specific to ExampleError.
+}
+```
+
+Use this pattern for error-specific logging, metrics, cleanup, or other
+behavior. Keep the final response contract consistent unless a deliberate
+application-specific exception is required.
+
+### Error handling example
+
+`GET /example` currently throws an `ExampleError` from the example controller.
+This route is included to demonstrate that errors thrown during request
+handling reach the centralized middleware. Replace this example behavior with
+your own controller logic when customizing the template.
+
 ## Adding routes
 
 The example router is exported from [`src/routes/index.ts`](src/routes/index.ts)
@@ -155,7 +243,8 @@ Before treating the template as a production application, review and adapt:
 - CORS origins and other CORS options.
 - Routes, controllers, and domain structure.
 - Request validation and response formats.
-- Error handling and logging.
+- Custom error classes, error response fields, and error-specific behavior.
+- Error logging and monitoring.
 - Authentication and authorization.
 - Rate limiting and other security middleware.
 - Health checks and graceful shutdown.
